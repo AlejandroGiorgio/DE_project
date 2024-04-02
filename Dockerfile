@@ -17,7 +17,7 @@ RUN pip install apache-airflow
 COPY scripts/refreshing.py /app/scripts
 
 # Copy the DAG file into the dags folder of Airflow
-COPY dags/my_dag.py /usr/local/airflow/dags
+COPY dags/dag.py /usr/local/airflow/dags
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
