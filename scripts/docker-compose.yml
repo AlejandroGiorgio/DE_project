@@ -1,0 +1,49 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+
+  webserver:
+    image: apache/airflow:2.8.4
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=Local
+      - REDSHIFT_HOST=${REDSHIFT_HOST}
+      - REDSHIFT_DATABASE=${REDSHIFT_DATABASE}
+      - REDSHIFT_USER=${REDSHIFT_USER}
+      - REDSHIFT_PWD=${REDSHIFT_PWD}
+      - REDSHIFT_PORT=${REDSHIFT_PORT}
+    volumes:
+      - ./dags:/opt/airflow/dags  # Montar el directorio de DAGs
+    ports:
+      - "8080:8080"
+    command: webserver
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /opt/airflow/airflow-webserver.pid ]"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  scheduler:
+    image: apache/airflow:2.8.4
+    restart: always
+    depends_on:
+      - webserver
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=Local
+      - REDSHIFT_HOST=${REDSHIFT_HOST}
+      - REDSHIFT_DATABASE=${REDSHIFT_DATABASE}
+      - REDSHIFT_USER=${REDSHIFT_USER}
+      - REDSHIFT_PWD=${REDSHIFT_PWD}
+      - REDSHIFT_PORT=${REDSHIFT_PORT}
+    volumes:
+      - ./dags:/opt/airflow/dags  # Montar el directorio de DAGs
+    command: scheduler

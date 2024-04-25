@@ -13,8 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install Airflow
 RUN pip install apache-airflow
 
-# Copy the ETL script into the scripts folder
-COPY scripts/refreshing.py /app/scripts
+# Copy all scripts into the scripts folder
+COPY scripts/ /app/scripts
 
 # Copy the DAG file into the dags folder of Airflow
 COPY dags/dag.py /usr/local/airflow/dags
